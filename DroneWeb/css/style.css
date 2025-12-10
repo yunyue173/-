@@ -1,0 +1,249 @@
+/* 全局样式 - 全端统一 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* 跨端统一字体（加载在线字体，避免本地字体缺失） */
+    font-family: "Ma Shan Zheng", "Montserrat", "Noto Sans SC", "PingFang SC", "Microsoft Yahei", sans-serif;
+}
+html, body {
+    height: 100%;
+    overflow: hidden;
+    /* 全端顺滑滚动 */
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 轮播容器 - 全端全屏 + 预加载优化 */
+.carousel-bg {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    opacity: 0; /* 初始化隐藏，JS延迟显示解决加载闪烁 */
+    transition: opacity 0.3s ease;
+    /* 新增：防止动画卡顿的底层优化 */
+    will-change: opacity;
+}
+
+/* 轮播图片 - 全端统一动画 + 预加载 */
+.carousel-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: #000;
+    opacity: 0;
+    z-index: 0;
+    /* 硬件加速 + 动画优化 */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: opacity;
+    transition: opacity 1.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.carousel-item.active {
+    opacity: 1;
+    z-index: 1;
+}
+.carousel-item.fade-out {
+    opacity: 0;
+    transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 导航栏 - 响应式适配（PC/手机区分） */
+.navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px; /* 基础内边距 */
+    background-color: transparent;
+    /* 兼容旧版浏览器flex */
+    display: -webkit-flex;
+    -webkit-justify-content: space-between;
+}
+
+/* ========== 核心修改：调整汉堡按钮显示规则 ========== */
+/* PC端导航（屏幕>768px）- 彻底隐藏汉堡按钮 */
+@media (min-width: 768px) {
+    .navbar {
+        padding: 16px 48px;
+    }
+    .mobile-nav-btn {
+        display: none !important; /* 强制隐藏，优先级最高 */
+    }
+    .nav-links {
+        display: flex !important; /* PC强制显示横向导航 */
+        gap: 20px; /* 替换margin，更稳定的间距 */
+    }
+}
+
+/* 移动端导航（微信/手机，屏幕<768px）- 优化汉堡按钮样式 */
+@media (max-width: 767px) {
+    .mobile-nav-btn {
+        display: block;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 11;
+        /* 优化：把黑色横线改成白色，适配背景 */
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .nav-links {
+        /* 移动端默认隐藏，点击按钮展开 */
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: rgba(0,0,0,0.85); /* 加深背景，提升可读性 */
+        flex-direction: column;
+        padding: 20px 16px;
+        z-index: 10;
+        /* 兼容微信flex */
+        -webkit-flex-direction: column;
+        gap: 10px; /* 替换margin，更稳定 */
+    }
+    .nav-links.show {
+        display: flex !important;
+        display: -webkit-flex !important;
+    }
+    .nav-links a {
+        margin: 0 !important; /* 清空旧margin */
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        font-size: 15px; /* 放大移动端文字，方便点击 */
+    }
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 1px;
+    z-index: 11; /* 确保不被导航覆盖 */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4); /* 增强logo可读性 */
+}
+.nav-links a {
+    color: #FFFFFF;
+    text-decoration: none;
+    margin: 0 16px; /* PC端间距（备用） */
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.4s ease;
+    display: inline-block; /* 扩大点击区域 */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4); /* 增强文字可读性 */
+}
+.nav-links a:hover {
+    color: #E0E0E0;
+    letter-spacing: 0.8px;
+}
+
+/* 核心内容 - 响应式文字大小 + 优化 */
+.content {
+    position: absolute;
+    z-index: 10;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%); /* 微信兼容 */
+    padding: 24px 32px;
+    border-radius: 8px;
+    max-width: 500px;
+    text-align: center;
+    width: 90%; /* 移动端宽度 */
+    /* 新增：防止内容被导航遮挡 */
+    top: calc(50% - 20px);
+}
+/* PC端文字放大 */
+@media (min-width: 768px) {
+    .content h1 {
+        font-size: 60px;
+    }
+    .desc {
+        font-size: 18px;
+    }
+}
+/* 移动端文字适配 */
+@media (max-width: 767px) {
+    .content h1 {
+        font-size: 36px; /* 手机微信适配 */
+        line-height: 1.2; /* 优化行高 */
+    }
+    .desc {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+}
+.content h1 {
+    margin-bottom: 16px;
+    font-weight: 500;
+    color: #FFFFFF;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.desc {
+    margin-bottom: 16px;
+    line-height: 1.6;
+    color: #FFFFFF;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 版权文字 - 响应式位置 */
+.copyright {
+    position: absolute;
+    z-index: 10;
+    left: 24px;
+    bottom: 24px;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    /* 移动端适配底部安全区（微信刘海屏/底部导航） */
+    bottom: 0; /* 降级写法，消除编辑器报错 */
+    bottom: constant(safe-area-inset-bottom);
+    bottom: env(safe-area-inset-bottom);
+}
+@media (max-width: 767px) {
+    .copyright {
+        left: 16px;
+        bottom: 16px;
+        font-size: 10px;
+        /* 移动端安全区适配 */
+        bottom: env(safe-area-inset-bottom, 16px);
+    }
+}
+
+/* 进度条 - 全端统一 + 动画优化 */
+.progress-bar-container {
+    position: absolute;
+    z-index: 10;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.1);
+    /* 适配微信底部安全区 + 消除编辑器报错 */
+    bottom: 0;
+    bottom: constant(safe-area-inset-bottom);
+    bottom: env(safe-area-inset-bottom);
+}
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #0066CC;
+    transition: width linear;
+    /* 新增：进度条动画流畅度优化 */
+    will-change: width;
+}

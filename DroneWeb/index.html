@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 核心响应式视口：全端统一 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- 微信分享优化 -->
+    <meta property="og:title" content="守望·清泠">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://yunyue173.github.io/yunyue/images/a2.jpg">
+    <meta property="og:description" content="Water is closely related to life!">
+    <title>守望·清泠</title>
+    <!-- 绝对路径确保全端加载 -->
+    <link rel="stylesheet" href="https://yunyue173.github.io/yunyue/css/style.css">
+    <!-- 引入字体（解决跨端字体不一致） -->
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Montserrat:wght@600&family=Noto+Sans+SC:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="carousel-bg">
+    <!-- 轮播图片（绝对路径） -->
+    <div class="carousel-item active" style="background-image: url('https://yunyue173.github.io/yunyue/images/a2.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('https://yunyue173.github.io/yunyue/images/a1.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('https://yunyue173.github.io/yunyue/images/a3.jpg');"></div>
+    <div class="carousel-item" style="background-image: url('https://yunyue173.github.io/yunyue/images/a4.jpg');"></div>
+
+    <!-- 响应式导航栏 -->
+    <nav class="navbar">
+        <div class="logo">守望·清泠</div>
+        <!-- 仅在屏幕<768px时才渲染汉堡按钮（PC端不会生成该元素） -->
+        <div class="mobile-nav-btn" id="mobileNavBtn" style="display: none;">☰</div>
+        <div class="nav-links" id="navLinks">
+            <a href="about-project.html" target="_blank" rel="noopener noreferrer">了解项目</a>
+            <a href="about-background.html" target="_blank" rel="noopener noreferrer">了解背景</a>
+            <a href="about-product.html" target="_blank" rel="noopener noreferrer">了解产品</a>
+            <a href="support.html" target="_blank" rel="noopener noreferrer">服务支持</a>
+            <a href="about-us.html" target="_blank" rel="noopener noreferrer">关于我们</a>
+            <a href="recruit-talents.html" target="_blank" rel="noopener noreferrer">招贤纳士</a>
+        </div>
+    </nav>
+
+    <!-- 响应式核心内容 -->
+    <div class="content">
+        <h1>守望·清泠</h1>
+        <p class="desc">Water is closely related to life!</p>
+    </div>
+
+    <!-- 版权文字（响应式） -->
+    <div class="copyright">守望清泠项目组 版权所有</div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar-container">
+        <div class="progress-bar"></div>
+    </div>
+</div>
+
+<script>
+    // 核心轮播配置（全端通用）
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    const intervalTime = 6000;
+    const animationDuration = 1500;
+    let currentIndex = 0;
+    let timer = null;
+    let progressBar = document.querySelector('.progress-bar');
+    let progressInterval = null;
+
+    // 重置进度条
+    function resetProgressBar() {
+        clearInterval(progressInterval);
+        progressBar.style.width = '0%';
+        let progress = 0;
+        progressInterval = setInterval(() => {
+            progress += (100 / (intervalTime / 10));
+            progressBar.style.width = `${progress}%`;
+            if (progress >= 100) clearInterval(progressInterval);
+        }, 10);
+    }
+
+    // 轮播切换动画
+    function switchCarousel() {
+        const currentItem = carouselItems[currentIndex];
+        currentItem.classList.add('fade-out');
+        setTimeout(() => {
+            currentItem.classList.remove('active', 'fade-out');
+        }, animationDuration);
+
+        currentIndex = (currentIndex + 1) % carouselItems.length;
+        const nextItem = carouselItems[currentIndex];
+        nextItem.classList.add('active');
+
+        resetProgressBar();
+    }
+
+    // 自动轮播启动
+    function startCarousel() {
+        resetProgressBar();
+        timer = setInterval(switchCarousel, intervalTime);
+    }
+
+    // 跨端交互统一：触摸+鼠标事件
+    const carouselBg = document.querySelector('.carousel-bg');
+    // 暂停逻辑（手机触摸/电脑鼠标移入）
+    function pauseCarousel() {
+        clearInterval(timer);
+        clearInterval(progressInterval);
+    }
+    // 恢复逻辑（手机触摸结束/电脑鼠标移出）
+    function resumeCarousel() {
+        startCarousel();
+    }
+    // 手机触摸事件
+    carouselBg.addEventListener('touchstart', pauseCarousel);
+    carouselBg.addEventListener('touchend', resumeCarousel);
+    // 电脑鼠标事件
+    carouselBg.addEventListener('mouseenter', pauseCarousel);
+    carouselBg.addEventListener('mouseleave', resumeCarousel);
+
+    // 移动端导航展开/收起（微信适配）
+    const mobileNavBtn = document.getElementById('mobileNavBtn');
+    const navLinks = document.getElementById('navLinks');
+    mobileNavBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('show');
+    });
+
+    // 全端初始化兼容
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            carouselBg.style.opacity = 1;
+            startCarousel();
+        }, 100);
+    });
+
+    // 阻止微信下拉刷新（仅移动端）
+    document.addEventListener('touchmove', (e) => {
+        if (window.innerWidth < 768 && e.target === document.body) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+</script>
+</body>
+</html>
